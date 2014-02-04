@@ -8,6 +8,14 @@ caDNAno_file = open(CDFilename, 'r')
 file_contents = eval(caDNAno_file.read())
 caDNAno_file.close()
 
-name_line = file_contents["vstrands"]
+strands = file_contents["vstrands"]
 
-print name_line[1]['col']
+
+num_strands = len(strands)
+print strands[0]['scaf'][0]
+for strand in strands:
+	print start_staple
+	end_staple= []
+	print str(strand['row']) + ', ' + str(strand['col']) + ', ' + str(len(strand['scaf']))
+
+
