@@ -3,7 +3,7 @@
 # Originally written by Will Patrick - moonshot@mit.edu
 
 # Open and read the file
-CDFilename = "/users/willpatrick/Downloads/caDNAnoTrackDesign.json"
+CDFilename = "caDNAnoTrackDesign.json"
 caDNAno_file = open(CDFilename, 'r')
 file_contents = eval(caDNAno_file.read())
 caDNAno_file.close()
@@ -12,10 +12,17 @@ strands = file_contents["vstrands"]
 
 
 num_strands = len(strands)
-print strands[0]['scaf'][0]
+print strands[0]['scaf'][0][0]
 for strand in strands:
-	print start_staple
+	i = 0
+	for scaf in strand['scaf']:
+		if scaf[0] != -1:
+			print i
+			break
+		else:
+			i += 1
+
 	end_staple= []
 	print str(strand['row']) + ', ' + str(strand['col']) + ', ' + str(len(strand['scaf']))
 
-
+   
