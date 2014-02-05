@@ -114,6 +114,19 @@ def area_plane(points):
 	area = area / 2.0
 	return area
 
+## Biotin tagging staple strands.
+# Find staple strands on the attachment face and change their color.
+# Will have to be different for different planes
+
+def streptavidin_staples(suggested_plane, loc):
+	strand_num = loc[0]
+	staple_loc = loc[1]
+
+	if suggested_plane == "xy":
+		print suggested_plane
+	else:
+		print suggested_plane
+
 ## MAIN 
 
 print
@@ -161,6 +174,7 @@ print "Please select a face of the nanostructure on the " + suggested_plane + " 
 print 
 point_face = eval(raw_input("Enter a point on the nanostructure face that should be attached to surface. Use the following format [strand number, staple position]: "))
 
+streptavidin_staples(suggested_plane,point_face)
 
 
 print point_face
