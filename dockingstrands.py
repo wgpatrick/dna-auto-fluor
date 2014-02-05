@@ -5,6 +5,8 @@
 # Cannot handle helices that have have a break
 
 import math
+from pyhull.convex_hull import ConvexHull
+
 
 # Open and read the file
 CDFilename = "caDNAnoTrackDesign.json"
@@ -59,6 +61,8 @@ def p2pdist(strand_1,position_1,strand_2,position_2):
 	yz = math.sqrt(y**2 + z**2)
 	xyz = math.sqrt(xy**2 + z**2)
 	return [x,y,z,xy,xz,yz,xyz]
+
+
 
 a = p2pdist(0,10,8,100)
 print a
