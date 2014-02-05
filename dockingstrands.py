@@ -7,6 +7,7 @@
 import math
 import numpy as np
 from pyhull.convex_hull import ConvexHull
+import functions.py
 
 # Parametric variables of the helix
 bps_turn = 10.5 # Number of base pairs per turn of the double helix
@@ -118,14 +119,23 @@ def area_plane(points):
 # Find staple strands on the attachment face and change their color.
 # Will have to be different for different planes
 
-def streptavidin_staples(suggested_plane, loc):
+def streptavidin_staples(suggested_plane, loc, location_matrix, strands):
 	strand_num = loc[0]
 	staple_loc = loc[1]
 
 	if suggested_plane == "xy":
 		print suggested_plane
+		z_pos = staple2z(loc[0])
+		print z_pos
+	elif suggested_plane == "xz":
+		y_pos = row2y(location_matrix[strand_num][1],location_matrix[strand_num][2])
+		print y_pos
 	else:
-		print suggested_plane
+		x_pos = col2x(location_matrix[strand][2])
+		print x_pos
+
+	print suggested_plane
+
 
 ## MAIN 
 
@@ -144,8 +154,7 @@ print "In it's current form, this script cannot process all types of JSON files.
 json = raw_input("Enter the name of the caDNAno file: ")
 
 # Open and read the file
-CDFilename = json
-caDNAno_file = open(CDFilename, 'r')
+caDNAno_file = open(json, 'r')
 file_contents = eval(caDNAno_file.read())
 caDNAno_file.close()
 strands = file_contents["vstrands"]
@@ -174,7 +183,7 @@ print "Please select a face of the nanostructure on the " + suggested_plane + " 
 print 
 point_face = eval(raw_input("Enter a point on the nanostructure face that should be attached to surface. Use the following format [strand number, staple position]: "))
 
-streptavidin_staples(suggested_plane,point_face)
+streptavidin_staples(suggested_plane,point_face,location)
 
 
 print point_face
