@@ -6,19 +6,12 @@
 
 import functions as f
 
-
 # Parametric variables of the helix
 bps_turn = 10.5 # Number of base pairs per turn of the double helix
 len_bp = .332 # nm, length of the helix per bp
 dia = 2.0 # nm, diameter of the duplex
 
-# 
-# FUNCTIONS
-#
-
-#Make a location matrix which contains column num, row, column, beginning strand and staple strand information
-
-## MAIN 
+## USER INTERFACE 
 
 print
 print "AutoFluor 0.1"
@@ -37,6 +30,7 @@ json = raw_input("Enter the name of the caDNAno file: ")
 caDNAno_file = open(json, 'r')
 file_contents = eval(caDNAno_file.read())
 caDNAno_file.close()
+
 strands = file_contents["vstrands"]
 
 print 
@@ -64,7 +58,7 @@ print
 
 point_face = eval(raw_input("Enter a point on the nanostructure face that should be attached to surface. Use the following format [strand number, staple position]: "))
 
-f.streptavidin_staples(suggested_plane,point_face,location,strands,dia,)
+f.streptavidin_staples(suggested_plane,point_face,location,strands,dia,len_bp)
 
 
 print point_face
