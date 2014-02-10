@@ -113,14 +113,28 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 	if suggested_plane == "xy":
 		print suggested_plane
 		z_pos = staple2z(strand_num,len_bp)
+		for strand in strands:
+			
 		print "z =" +  str(z_pos)
+		for 
 
 	elif suggested_plane == "xz":
 		y_pos = row2y(location_matrix[strand_num][1],location_matrix[strand_num][2],dia)
 		print "y =" + str(y_pos)
-		
+		for strand in strands:
+			y_strand = row2y(strand['row'],strand['col'],dia)
+			if y_strand == y_pos:
+				for five_prime_end in strand['stap_colors']:
+					five_prime_end[1] = 3333333
+				print "Strand " + str(strand['num']) + " has " + str(len(strand['stap_colors'])) + " staple strands that are now magenta."
 	else:
 		x_pos = col2x(location_matrix[strand][2])
 		print "x =" + str(x_pos)
+		for strand in strands:
+			x_strand = col2x(strand['col'],dia)
+			if x_strand == x_pos:
+				for five_prime_end in strand['stap_colors']:
+					five_prime_end[1] = 3333333
+				print "Strand " + str(strand['num']) + " has " + str(len(strand['stap_colors'])) + " staple strands that are now magenta."
 
 	print suggested_plane
