@@ -63,8 +63,8 @@ point_face = eval(raw_input("Enter a point on the nanostructure face that should
 f.streptavidin_staples(suggested_plane,point_face,location,strands,dia,len_bp)
 
 print "Great. That seemed to work. All of the staple strands that should be biotinylated are now colored magenta."
-
-
+print
+print "Now it is time to select the locations for the docking sites"
 
 
 ## Writing JSON file

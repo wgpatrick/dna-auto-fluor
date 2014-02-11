@@ -146,6 +146,18 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 def staple_loc(location_matrix,strands,dia,len_bp):
 
 
+def centroid_hull(suggested_plane,location_matrix,dia,len_bp):
+	if suggested_plane = "xy":
+		points = xy_points(location_matrix,dia)
+		convex_hull = ConvexHull(points)
+		points = convex_hull.points()
+		a = [p[0] for p in points]
+		b = [p[1] for p in points]
+		centroid = sum()
+
+	elif suggested_plane = "xz":
+
+	else:
 
 
 
