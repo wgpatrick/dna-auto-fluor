@@ -141,23 +141,50 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 
 	print suggested_plane
 
-# Find the number and location of staple strands with a certain distance of a particular point on the structure
+# Find the location of the threeprime ends of staple st
 
-def staple_loc(location_matrix,strands,dia,len_bp):
+def find_threeprime_staples(strands):
+	three_primes=[]
+	for strand in strands:
+		prime_build=[]
+		for i in range(0,len(strand["stap"]),1):
+			if (strand["stap"][i][2] == -1) & (strand["stap"][i][0] >= 0):
+				prime_build.append(i)
+		three_primes.append(prime_build)
 
+	# for i in range(0,len(three_primes),1):
+
+
+	return three_primes
+
+## Finds the location of the centroid on the suggest plane
 
 def centroid_hull(suggested_plane,location_matrix,dia,len_bp):
-	if suggested_plane = "xy":
-		points = xy_points(location_matrix,dia)
-		convex_hull = ConvexHull(points)
-		points = convex_hull.points()
-		a = [p[0] for p in points]
-		b = [p[1] for p in points]
-		centroid = sum()
-
-	elif suggested_plane = "xz":
-
+	if suggested_plane == "xy":
+		some_points = xy_points(location_matrix,dia)
+	elif suggested_plane == "xz":
+		some_points = xz_points(location_matrix,dia)
 	else:
+		some_points = yz_points(location_matrix,dia)
+
+	convex_hull = ConvexHull(some_points)
+	hull_points = convex_hull.points
+	hull_vertices = convex_hull.vertices
+	for_centroid = [0,0]
+	for i in hull_vertices:
+		for_centroid[0] += hull_points[i[0]][0]
+		for_centroid[1] += hull_points[i[0]][1]		
+	centroid = [for_centroid[0]/float(len(hull_vertices)),for_centroid[1]/float(len(hull_vertices))]
+	return centroid
+	
+## This formula finds the strand index given a number of a strand
+
+def strandnum_to_strandindex(location_matrix,num):
+	for i in range(0,len(location_matrix),1):
+		if location_matrix[i][0]==num:
+			return i
+
+
 
 
 
