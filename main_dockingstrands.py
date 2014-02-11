@@ -1,10 +1,12 @@
-# This script prepares a DNA nanostructure for DNA-PAINT.
+# AutoFluor 0.1
+# This script prepares a DNA nanostructure for super resolution fluorescent microscopy.
 # Originally written by Will Patrick - moonshot@mit.edu
 
 # List of things this script cannot do:
 # Cannot handle helices that have have a break
 
 import functions as f
+import json
 
 # Parametric variables of the helix
 bps_turn = 10.5 # Number of base pairs per turn of the double helix
@@ -24,10 +26,10 @@ print "In it's current form, this script cannot process all types of JSON files.
 #print "In it's current form the script has several limitations: (1) the script is not currently written to handle stands that have multiple ending and starting points, (2) the viewing planes for the  microscp"
 
 # Get the file from the user
-json = raw_input("Enter the name of the caDNAno file: ")
+json_name = raw_input("Enter the name of the caDNAno file: ")
 
 # Open and read the file
-caDNAno_file = open(json, 'r')
+caDNAno_file = open(json_name, 'r')
 file_contents = eval(caDNAno_file.read())
 caDNAno_file.close()
 
@@ -59,6 +61,18 @@ print
 point_face = eval(raw_input("Enter a point on the nanostructure face that should be attached to surface. Use the following format [strand number, staple position]: "))
 
 f.streptavidin_staples(suggested_plane,point_face,location,strands,dia,len_bp)
+
+print "Great. That seemed to work. All of the staple strands that should be biotinylated are now colored magenta."
+
+
+
+
+## Writing JSON file
+file_contents_new = file_contents
+file_contents_new["vstrands"] = strands
+new_name = json_name[:-5] + "_new" + ".json"
+with open(new_name, 'w') as outfile:
+  json.dump(file_contents_new, outfile)
 
 
 print point_face

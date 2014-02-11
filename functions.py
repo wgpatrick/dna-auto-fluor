@@ -112,11 +112,13 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 
 	if suggested_plane == "xy":
 		print suggested_plane
-		z_pos = staple2z(strand_num,len_bp)
+		i = 0
 		for strand in strands:
-			
-		print "z =" +  str(z_pos)
-		for 
+			for five_prime_end in strand['stap_colors']:
+				if abs(five_prime_end[0] - staple_loc) < 7:
+					five_prime_end[1] = 9109606
+					i =+ 1
+		print i + " staple stands are now magenta within 7 bp of the attachment location"
 
 	elif suggested_plane == "xz":
 		y_pos = row2y(location_matrix[strand_num][1],location_matrix[strand_num][2],dia)
@@ -125,7 +127,7 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 			y_strand = row2y(strand['row'],strand['col'],dia)
 			if y_strand == y_pos:
 				for five_prime_end in strand['stap_colors']:
-					five_prime_end[1] = 3333333
+					five_prime_end[1] = 9109606
 				print "Strand " + str(strand['num']) + " has " + str(len(strand['stap_colors'])) + " staple strands that are now magenta."
 	else:
 		x_pos = col2x(location_matrix[strand][2])
@@ -134,7 +136,16 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 			x_strand = col2x(strand['col'],dia)
 			if x_strand == x_pos:
 				for five_prime_end in strand['stap_colors']:
-					five_prime_end[1] = 3333333
+					five_prime_end[1] = 9109606
 				print "Strand " + str(strand['num']) + " has " + str(len(strand['stap_colors'])) + " staple strands that are now magenta."
 
 	print suggested_plane
+
+# Find the number and location of staple strands with a certain distance of a particular point on the structure
+
+def staple_loc(location_matrix,strands,dia,len_bp):
+
+
+
+
+
