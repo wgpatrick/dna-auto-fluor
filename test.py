@@ -9,6 +9,8 @@ len_bp = .332 # nm, length of the helix per bp
 dia = 2.0 # nm, diameter of the duplex
 min_distance = 25 # nm, minimum distance separating fluorophore docking sites
 max_distance = 6
+min_num_docking_strands = 5
+
 
 # Get the file from the user
 json_name = "hexagon_prism_final_barcode_7.json"
@@ -37,23 +39,14 @@ loc = [0,23]
 
 face_pts = f.face_points(staples,location,loc,suggested_plane,dia,len_bp)
 
-face_centroid_hull = f.centroid_hull(face_pts)
-from operator import itemgetter, attrgetter
-sorted_face = sorted(face_centroid_hull[0], key=itemgetter(4),reverse=True)
-print sorted_face
+[first_point,hull_face_pts] = f.first_point(face_pts,staples, max_distance, location, len_bp, dia,min_num_docking_strands)
 
-maximum = max([i[4] for i in face_centroid_hull[0]])
-index = [i[4] for i in face_centroid_hull[0]].index(maximum)
 
-print index
-print maximum
+[suggested_sites,enough_sites,possible_combos]=f.remaining_docking_sites(hull_face_pts,first_point,staples,max_distance,location,len_bp,dia,min_num_docking_strands,min_distance)
 
-first_point = f.first_point(face_pts,staples, max_distance, location, len_bp, dia)
-print first_point
+[a,b,c]=f.find_docking_strands(suggested_sites,strands,staples,max_distance,location,len_bp,dia)
 
-nearby_strands = f.nearby_threeprime(46,40,staples,max_distance,location,len_bp,dia)
-
-print nearby_strands
+print a
 
 #print face_centroid_hull
 

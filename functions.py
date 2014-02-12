@@ -205,7 +205,7 @@ def face_points(staple_positions,location_matrix,loc,suggested_plane,dia,len_bp)
 			face_points.append([i,location_matrix[i][4],y_point,z_point_2])
 	return face_points
 
-## Finds the location of the centroid on the suggest plane
+## Finds the location of the centroid on the points of face
 
 def centroid_hull(face_points):
 	points_for_hull = []
@@ -227,13 +227,6 @@ def centroid_hull(face_points):
 		point.append(d_centroid)
 
 	return [face_points_hull,centroid]
-	
-## This formula finds the strand index given a number of a strand
-
-def strandnum_to_strandindex(location_matrix,num):
-	for i in range(0,len(location_matrix),1):
-		if location_matrix[i][0]==num:
-			return i
 
 # Returns a list of 3' strands within a certain distance of a specific point on the nanostructure. 
 # Arguments are: the position of interest (strand_index & staple pos), the list of all staples computed by staple_positions(), 
@@ -250,26 +243,85 @@ def nearby_threeprime(strand_index,staple_pos,all_staples,max_distance,location_
 
 ### This function finds the first docking site on the nanostructure
 
-def first_point(face_points,staples, max_distance, location, len_bp, dia):
+def first_point(face_points,staples, max_distance, location, len_bp, dia, min_num_docking_strands):
 	face_centroid_hull=centroid_hull(face_points)
+
 	maximum = max([i[4] for i in face_centroid_hull[0]])
 	index = [i[4] for i in face_centroid_hull[0]].index(maximum)
 	sorted_face_hull = sorted(face_centroid_hull[0], key=itemgetter(4),reverse=True)
+	
 	for point in sorted_face_hull:
 		num_nearby_docking_strands = len(nearby_threeprime(point[0],point[1],staples,max_distance,location,len_bp,dia))
-		if num_nearby_docking_strands >= 5:
+		if num_nearby_docking_strands >= min_num_docking_strands:
 			first_point = point
 			break
-	return first_point		
-
-
-
-
-
-
+	if first_point ==[]:
+		print "Could not find a first docking site with 5 or more nearby 3' staple strands. Try increasing the minimum distance between the fluorophore docking strand and the site"
+	return [first_point,sorted_face_hull]		
 
 
 ## Find the locations of the docking sites
+
+def remaining_docking_sites(hulled_face_points,first_point,all_staples,max_distance,location_matrix,len_bp,dia,min_num_docking_strands,min_distance):
+	sites_with_enough_nearby_docking_strands =[]
+	sites_with_enough=[]
+	for site in hulled_face_points:
+		threeprimes=nearby_threeprime(site[0],site[1],all_staples,max_distance,location_matrix,len_bp,dia)
+		if len(threeprimes) >= min_num_docking_strands:
+			sites_with_enough.append(site)
+
+	possible_combos=[]
+	for i in range(0,len(sites_with_enough),1):
+		for j in range(0,len(sites_with_enough),1):
+			d1 = math.sqrt( (sites_with_enough[i][2]-first_point[2])**2 + (sites_with_enough[i][3]-first_point[3])**2 )
+			d2 = math.sqrt( (sites_with_enough[i][2]-sites_with_enough[j][2])**2 + (sites_with_enough[i][3]-sites_with_enough[j][3])**2 )
+			d3 = math.sqrt( (sites_with_enough[j][2]-first_point[2])**2 + (sites_with_enough[j][3]-first_point[3])**2 )	
+			if ((d3 > min_distance) & (d2 > min_distance) & (d1 > min_distance)):			
+				site_1 = first_point[0:2]
+				site_2 = sites_with_enough[i][0:2]
+				site_3 = sites_with_enough[j][0:2]
+				d_perim = d1+d2+d3
+				if not ( [site_1,site_3,site_2,[d3,d2,d1],d_perim] in possible_combos):
+					possible_combos.append([site_1,site_2,site_3,[d1,d2,d3],d_perim])
+	sorted_combos = sorted(possible_combos,key=itemgetter(4),reverse=True)
+	suggested_sites = sorted_combos[0]
+
+	return [suggested_sites,sites_with_enough,sorted_combos]
+
+# find the docking strands at those docking sites
+
+def find_docking_strands(suggested_sites,strands,all_staples,max_distance,location_matrix,len_bp,dia):
+	A = suggested_sites[0]
+	B = suggested_sites[1]
+	C = suggested_sites[2]
+
+	A_docking_strands = nearby_threeprime(A[0],A[1],all_staples,max_distance,location_matrix,len_bp,dia)
+	B_docking_strands = nearby_threeprime(B[0],B[1],all_staples,max_distance,location_matrix,len_bp,dia)
+	C_docking_strands = nearby_threeprime(C[0],C[1],all_staples,max_distance,location_matrix,len_bp,dia)
+
+	for i in A_docking_strands:
+		for staple in strands[i[2]]["stap_colors"]:
+			if staple[0] == i[3]:
+				staple[1] == 9109606
+	for i in B_docking_strands:
+		for staple in strands[i[2]]["stap_colors"]:
+			if staple[0] == i[3]:
+				staple[1] == 9109606
+	for i in C_docking_strands:
+		for staple in strands[i[2]]["stap_colors"]:
+			if staple[0] == i[3]:
+				staple[1] == 9109606
+
+
+	return [A_docking_strands,B_docking_strands,C_docking_strands]
+
+## This formula finds the strand index given a number of strands
+def strandnum_to_strandindex(location_matrix,num):
+	for i in range(0,len(location_matrix),1):
+		if location_matrix[i][0]==num:
+			return i
+
+
 
 
 
