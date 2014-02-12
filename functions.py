@@ -4,6 +4,7 @@
 import math
 import numpy as np
 from pyhull.convex_hull import ConvexHull
+from operator import itemgetter, attrgetter
 
 #Make a location matrix which contains column num, row, column, beginning strand and staple strand information
 
@@ -249,16 +250,20 @@ def nearby_threeprime(strand_index,staple_pos,all_staples,max_distance,location_
 
 ### This function finds the first docking site on the nanostructure
 
-def first_point(face_points,suggested_plane,location_matrix,dia,len_bp):
-	centroid_stuff = centroid_hull(face_points)
-	centroid_first = centroid_stuff[1][0]
-	centroid_second = centroid_stuff[1][1]
+def first_point(face_points,staples, max_distance, location, len_bp, dia):
+	face_centroid_hull=centroid_hull(face_points)
+	maximum = max([i[4] for i in face_centroid_hull[0]])
+	index = [i[4] for i in face_centroid_hull[0]].index(maximum)
+	sorted_face_hull = sorted(face_centroid_hull[0], key=itemgetter(4),reverse=True)
+	for point in sorted_face_hull:
+		num_nearby_docking_strands = len(nearby_threeprime(point[0],point[1],staples,max_distance,location,len_bp,dia))
+		if num_nearby_docking_strands >= 5:
+			first_point = point
+			break
+	return first_point		
 
-	for point in face_points:
 
 
-
-		return[centroid_first,centroid_second]
 
 
 

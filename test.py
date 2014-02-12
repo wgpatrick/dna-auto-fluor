@@ -8,7 +8,7 @@ bps_turn = 10.5 # Number of base pairs per turn of the double helix
 len_bp = .332 # nm, length of the helix per bp
 dia = 2.0 # nm, diameter of the duplex
 min_distance = 25 # nm, minimum distance separating fluorophore docking sites
-max_distance = 5
+max_distance = 6
 
 # Get the file from the user
 json_name = "hexagon_prism_final_barcode_7.json"
@@ -38,13 +38,18 @@ loc = [0,23]
 face_pts = f.face_points(staples,location,loc,suggested_plane,dia,len_bp)
 
 face_centroid_hull = f.centroid_hull(face_pts)
+from operator import itemgetter, attrgetter
+sorted_face = sorted(face_centroid_hull[0], key=itemgetter(4),reverse=True)
+print sorted_face
+
 maximum = max([i[4] for i in face_centroid_hull[0]])
 index = [i[4] for i in face_centroid_hull[0]].index(maximum)
 
 print index
 print maximum
 
-first_point = face_centroid_hull[0][index]
+first_point = f.first_point(face_pts,staples, max_distance, location, len_bp, dia)
+print first_point
 
 nearby_strands = f.nearby_threeprime(46,40,staples,max_distance,location,len_bp,dia)
 
