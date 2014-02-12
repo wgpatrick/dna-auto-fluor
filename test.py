@@ -1,3 +1,5 @@
+# I'm using this code to just test functions as I make them
+
 import functions as f
 import json
 
@@ -5,6 +7,8 @@ import json
 bps_turn = 10.5 # Number of base pairs per turn of the double helix
 len_bp = .332 # nm, length of the helix per bp
 dia = 2.0 # nm, diameter of the duplex
+min_distance = 25 # nm, minimum distance separating fluorophore docking sites
+max_distance = 5
 
 # Get the file from the user
 json_name = "hexagon_prism_final_barcode_7.json"
@@ -18,18 +22,34 @@ strands = file_contents["vstrands"]
 
 location = f.location_matrix(strands)
 
-print f.find_threeprime_staples(strands)
-print len(f.find_threeprime_staples(strands))
+staples = f.staple_positions(strands,location)
 
-strand_index = 0
-current_location = 23
-while strand_index != None:
-	old_strand_index = strand_index
-	old_location = current_location
-	strand_index = f.strandnum_to_strandindex(location,strands[old_strand_index]["stap"][old_location][0])
-	current_location = strands[old_strand_index]["stap"][old_location][1]
-print old_strand_index
-print old_location
+areas = [f.area_plane(f.xy_points(location,dia)), f.area_plane(f.xz_points(location,dia,len_bp)), f.area_plane(f.yz_points(location,dia,len_bp))]
 
+if (areas[0] > areas[1]) & (areas[0] > areas[2]):
+	suggested_plane = "xy"
+elif (areas[1] > areas[0]) & (areas[1] > areas[2]):
+	suggested_plane = "xz"
+else:
+	suggested_plane = "yz"
 
-print f.strandnum_to_strandindex(location,55)
+loc = [0,23]
+
+face_pts = f.face_points(staples,location,loc,suggested_plane,dia,len_bp)
+
+face_centroid_hull = f.centroid_hull(face_pts)
+maximum = max([i[4] for i in face_centroid_hull[0]])
+index = [i[4] for i in face_centroid_hull[0]].index(maximum)
+
+print index
+print maximum
+
+first_point = face_centroid_hull[0][index]
+
+nearby_strands = f.nearby_threeprime(46,40,staples,max_distance,location,len_bp,dia)
+
+print nearby_strands
+
+#print face_centroid_hull
+
+#print f.first_point(face_pts,suggested_plane,location,dia,len_bp)
