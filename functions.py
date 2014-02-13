@@ -139,8 +139,6 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 				for five_prime_end in strand['stap_colors']:
 					five_prime_end[1] = 9109606
 				
-
-
 # Finds the location of the 5' prime and 3' ends of every staple strand. 
 #The output is a list of all staples with [3' strand index, 3' staple position, 5' strand index, 5' staple position]
 
@@ -261,7 +259,7 @@ def first_point(face_points,staples, max_distance, location, len_bp, dia, min_nu
 	return [first_point,sorted_face_hull]		
 
 
-## This form
+## This finds the remaining docking sites
 
 def remaining_docking_sites(hulled_face_points,first_point,all_staples,max_distance,location_matrix,len_bp,dia,min_num_docking_strands,min_distance):
 	sites_with_enough_nearby_docking_strands =[]
@@ -289,7 +287,7 @@ def remaining_docking_sites(hulled_face_points,first_point,all_staples,max_dista
 
 	return [suggested_sites,sites_with_enough,sorted_combos]
 
-# find_docking_strands() formula does two things. (1) It changes the color of all the strands at sites 1, 2 and 3. (2) It outputs the 
+# find_docking_strands() formula does two things. (1) It changes the color of all the strands at sites 1, 2 and 3. (2) It outputs all the docking strands.
 
 def find_docking_strands(suggested_sites,strands,all_staples,max_distance,location_matrix,len_bp,dia,color1,color2,color3):
 	A = suggested_sites[0]
@@ -314,6 +312,34 @@ def find_docking_strands(suggested_sites,strands,all_staples,max_distance,locati
 				staple[1] == color3 
 
 	return [A_docking_strands,B_docking_strands,C_docking_strands]
+
+#### Ghost strands
+
+def ghost_strands(a_strands,b_strands,c_strands,location_matrix,strands):
+	total_num_strands = len(location_matrix)
+	total_len_strand = len(strands[0]["stap"])
+	# copy first strand 3 times
+	for i
+	strands.append(strands[0])
+	strands[-1]['num']= total_num_strands + 1
+	strands[-1]['row']= 0
+	strands[-1]['col']= 0
+	strands[-1]['scaf']=[]
+	strands[-1]['stap']=[]
+	strands[-1]['stap_colors']=[]
+	strands[-1]['skip']=[]
+	strands[-1]['loop']=[]
+	strands[-1]['stap_Loop']=[]
+	strands[-1]['scaf_Loop']=[]
+
+	strands.append(strands[0])
+	strands.append(strands[0])
+
+
+	return strands
+
+
+
 
 #### This formula changes the color of staple strands in the caDNAno file to the specific color
 
