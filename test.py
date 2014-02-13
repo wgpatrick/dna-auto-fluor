@@ -13,6 +13,7 @@ min_num_docking_strands = 5
 docking_site_color_1 = 16528437 # red
 docking_site_color_2 = 1870874 # green
 docking_site_color_3 = 1250225 # blue
+three_p_length = 7 # length of three prime docking strand extension
 
 # Get the file from the user
 json_name = "hexagon_prism_final_barcode_7.json"
@@ -49,8 +50,8 @@ face_pts = f.face_points(staples,location,loc,suggested_plane,dia,len_bp)
 [a,b,c]=f.find_docking_strands(suggested_sites,strands,staples,max_distance,location,len_bp,dia,docking_site_color_1,docking_site_color_2,docking_site_color_3)
 
 
-new_strands = f.ghost_strands(a,b,c,location,strands)
-print new_strands[-2]
+new_strands = f.ghost_strands(a,b,c,location,strands,three_p_length)
+test_strand = new_strands[-3]
 
 
 

@@ -43,6 +43,7 @@ all_staples_color = 4013375 #dark grey
 docking_site_color_1 = 16528437 # red
 docking_site_color_2 = 1870874 # green
 docking_site_color_3 = 1250225 # blue
+three_p_length = 7 # length of three prime docking strand extension
 
 ###########################
 ## USER INTERFACE BEGINS ## 
@@ -137,6 +138,8 @@ face_pts = f.face_points(staples,location,point_face,suggested_plane,dia,len_bp)
 [suggested_sites,enough_sites,possible_combos]=f.remaining_docking_sites(hull_face_pts,first_point,staples,max_distance,location,len_bp,dia,min_num_docking_strands,min_distance)
 
 [a,b,c]=f.find_docking_strands(suggested_sites,strands,staples,max_distance,location,len_bp,dia,docking_site_color_1,docking_site_color_2,docking_site_color_3)
+
+f.ghost_strands(a,b,c,location,strands,three_p_length)
 
 #############
 ## RESULTS ##

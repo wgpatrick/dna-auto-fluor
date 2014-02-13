@@ -315,28 +315,57 @@ def find_docking_strands(suggested_sites,strands,all_staples,max_distance,locati
 
 #### Ghost strands
 
-def ghost_strands(a_strands,b_strands,c_strands,location_matrix,strands):
+def ghost_strands(a_staples,b_staples,c_staples,location_matrix,strands,three_p_length):
 	total_num_strands = len(location_matrix)
 	total_len_strand = len(strands[0]["stap"])
+	staple_extension =[a_staples,b_staples,c_staples]
+
 	# copy first strand 3 times
-	for i
-	strands.append(strands[0])
-	strands[-1]['num']= total_num_strands + 1
-	strands[-1]['row']= 0
-	strands[-1]['col']= 0
-	strands[-1]['scaf']=[]
-	strands[-1]['stap']=[]
-	strands[-1]['stap_colors']=[]
-	strands[-1]['skip']=[]
-	strands[-1]['loop']=[]
-	strands[-1]['stap_Loop']=[]
-	strands[-1]['scaf_Loop']=[]
+	for i in range(0,3,1):
+		strands.append(strands[0])
+		strands[-1]['num'] = strands[-2]['num']+1
+		strands[-1]['row'] = 0
+		strands[-1]['col'] = i
+		strands[-1]['scaf']=[]
+		for a in range(0,total_len_strand,1):
+			strands[-1]['scaf'].append([-1,-1,-1,-1])
+		strands[-1]['stap']=[]
+		for a in range(0,total_len_strand,1):
+			strands[-1]['stap'].append([-1,-1,-1,-1])
+		strands[-1]['stap_colors']=[]
+		strands[-1]['skip']=[]
+		for j in range(0,total_len_strand,1):
+			strands[-1]['skip'].append(0)
+		strands[-1]['loop']=[]
+		for j in range(0,total_len_strand,1):
+			strands[-1]['loop'].append(0)
+		strands[-1]['stap_Loop']=[]
+		strands[-1]['scaf_Loop']=[]
 
-	strands.append(strands[0])
-	strands.append(strands[0])
-
-
+	num_a = len(a_staples)
+	staple_locs =[]	
+	for i in range(0,len(staple_extension),1):
+		staples = staple_extension[i]
+		strand = strands[-3+i]
+		position = 0
+		staple_locs.append([])	
+		for staple in staples:
+			staple_locs[i].append([len(strands)-3+i,position])
+			strand['stap'][position] = [staple[0],staple[1],strand['num'], position+1]
+			for bp in range(0,three_p_length-1,1):
+				position += 1
+				strand['stap'][position] = [strand['stap'][position-1][2],strand['stap'][position-1][3] - 1 ,strand['stap'][position-1][2], position+1]
+			position +=3
+	print staple_locs
+	for site in staple_extension:
+		for staple in site:
+			strand_index = staple[0]
+			position = staple[1]
+			strands[strand_index]["stap"][position][2] = staple_locs[staple_extension.index(site)][site.index(staple)][0]
+			strands[strand_index]["stap"][position][3] = staple_locs[staple_extension.index(site)][site.index(staple)][1]
+	
 	return strands
+
 
 
 
