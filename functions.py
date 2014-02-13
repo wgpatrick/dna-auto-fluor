@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # -*- coding: ascii -*-
 
+# List of functions used in AutoFluor 0.1
+# This script prepares a DNA nanostructure for super resolution fluorescent microscopy.
+# Originally written by Will Patrick - moonshot@mit.edu - MIT Media Lab
+# Feb 2014
+
 import math
 import numpy as np
 from pyhull.convex_hull import ConvexHull
@@ -118,7 +123,6 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 				if abs(five_prime_end[0] - staple_loc) < 7:
 					five_prime_end[1] = 9109606
 					i =+ 1
-		print i + " staple stands are now magenta within 7 bp of the attachment location"
 
 	elif suggested_plane == "xz":
 		y_pos = row2y(location_matrix[strand_num][1],location_matrix[strand_num][2],dia)
@@ -127,7 +131,6 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 			if y_strand == y_pos:
 				for five_prime_end in strand['stap_colors']:
 					five_prime_end[1] = 9109606
-				print "Strand " + str(strand['num']) + " has " + str(len(strand['stap_colors'])) + " staple strands that are now magenta."
 	else:
 		x_pos = col2x(location_matrix[strand][2])
 		for strand in strands:
@@ -135,9 +138,8 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 			if x_strand == x_pos:
 				for five_prime_end in strand['stap_colors']:
 					five_prime_end[1] = 9109606
-				print "Strand " + str(strand['num']) + " has " + str(len(strand['stap_colors'])) + " staple strands that are now magenta."
+				
 
-	print suggested_plane
 
 # Finds the location of the 5' prime and 3' ends of every staple strand. 
 #The output is a list of all staples with [3' strand index, 3' staple position, 5' strand index, 5' staple position]
@@ -236,7 +238,6 @@ def centroid_hull(face_points):
 def nearby_threeprime(strand_index,staple_pos,all_staples,max_distance,location_matrix,len_bp,dia):
 	nearby_staples=[]
 	for staple in all_staples:
-		#print p2pdist(strand_index,staple_pos,staple[0],staple[1],location_matrix,len_bp,dia)[6]
 		if p2pdist(strand_index,staple_pos,staple[0],staple[1],location_matrix,len_bp,dia)[6] < max_distance:
 			nearby_staples.append(staple)
 	return nearby_staples
@@ -260,7 +261,7 @@ def first_point(face_points,staples, max_distance, location, len_bp, dia, min_nu
 	return [first_point,sorted_face_hull]		
 
 
-## Find the locations of the docking sites
+## This form
 
 def remaining_docking_sites(hulled_face_points,first_point,all_staples,max_distance,location_matrix,len_bp,dia,min_num_docking_strands,min_distance):
 	sites_with_enough_nearby_docking_strands =[]
@@ -288,9 +289,9 @@ def remaining_docking_sites(hulled_face_points,first_point,all_staples,max_dista
 
 	return [suggested_sites,sites_with_enough,sorted_combos]
 
-# find the docking strands at those docking sites
+# find_docking_strands() formula does two things. (1) It changes the color of all the strands at sites 1, 2 and 3. (2) It outputs the 
 
-def find_docking_strands(suggested_sites,strands,all_staples,max_distance,location_matrix,len_bp,dia):
+def find_docking_strands(suggested_sites,strands,all_staples,max_distance,location_matrix,len_bp,dia,color1,color2,color3):
 	A = suggested_sites[0]
 	B = suggested_sites[1]
 	C = suggested_sites[2]
@@ -302,27 +303,40 @@ def find_docking_strands(suggested_sites,strands,all_staples,max_distance,locati
 	for i in A_docking_strands:
 		for staple in strands[i[2]]["stap_colors"]:
 			if staple[0] == i[3]:
-				staple[1] == 9109606
+				staple[1] == color1 
 	for i in B_docking_strands:
 		for staple in strands[i[2]]["stap_colors"]:
 			if staple[0] == i[3]:
-				staple[1] == 9109606
+				staple[1] == color2 
 	for i in C_docking_strands:
 		for staple in strands[i[2]]["stap_colors"]:
 			if staple[0] == i[3]:
-				staple[1] == 9109606
-
+				staple[1] == color3 
 
 	return [A_docking_strands,B_docking_strands,C_docking_strands]
 
-## This formula finds the strand index given a number of strands
+#### This formula changes the color of staple strands in the caDNAno file to the specific color
+
+def change_color_of_all_strands(strands,color):
+	for strand in strands:
+		for staple in strand["stap_colors"]:
+			staple[1] = color
+
+##### ##### ##### ##### ##### ##### ##### ##### #####
+#### Find the strand index given the strand number ##
+##### ##### ##### ##### ##### ##### ##### ##### ##### 
+
 def strandnum_to_strandindex(location_matrix,num):
 	for i in range(0,len(location_matrix),1):
 		if location_matrix[i][0]==num:
 			return i
 
+##### ##### ##### ##### ##### ##### ##### ##### ##### ###
+##### Find the strand index given the strand number ##### 
+##### ##### ##### ##### ##### ##### ##### ##### ##### ###
 
-
+def strandindex_to_strandnum(location_matrix,index):
+	return location_matrix[index][0]
 
 
 
