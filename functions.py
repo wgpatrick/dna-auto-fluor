@@ -316,58 +316,64 @@ def find_docking_strands(suggested_sites,strands,all_staples,max_distance,locati
 #### Ghost strands
 
 def ghost_strands(a_staples,b_staples,c_staples,location_matrix,strands,three_p_length):
+	all_strands = strands
 	total_num_strands = len(location_matrix)
-	total_len_strand = len(strands[0]["stap"])
+	total_len_strand = len(all_strands[0]["stap"])
 	staple_extension =[a_staples,b_staples,c_staples]
-
-	# copy first strand 3 times
+	
+	# making ghost strands
+	new_strands=[]
 	for i in range(0,3,1):
-		strands.append(strands[0])
-		strands[-1]['num'] = strands[-2]['num']+1
-		strands[-1]['row'] = 0
-		strands[-1]['col'] = i
-		strands[-1]['scaf']=[]
+		new_strand={}
+		new_strand['row'] = 0
+		new_strand['num'] = len(all_strands) + i
+		new_strand['col'] = i
+		new_strand['scaf']=[]
 		for a in range(0,total_len_strand,1):
-			strands[-1]['scaf'].append([-1,-1,-1,-1])
-		strands[-1]['stap']=[]
+			new_strand['scaf'].append([-1,-1,-1,-1])
+		new_strand['stap']=[]
 		for a in range(0,total_len_strand,1):
-			strands[-1]['stap'].append([-1,-1,-1,-1])
-		strands[-1]['stap_colors']=[]
-		strands[-1]['skip']=[]
+			new_strand['stap'].append([-1,-1,-1,-1])
+		new_strand['stap_colors']=[]
+		new_strand['skip']=[]
 		for j in range(0,total_len_strand,1):
-			strands[-1]['skip'].append(0)
-		strands[-1]['loop']=[]
+			new_strand['skip'].append(0)
+		new_strand['loop']=[]
 		for j in range(0,total_len_strand,1):
-			strands[-1]['loop'].append(0)
-		strands[-1]['stap_Loop']=[]
-		strands[-1]['scaf_Loop']=[]
+			new_strand['loop'].append(0)
+		new_strand['stap_Loop']=[]
+		new_strand['scafLoop']=[]
+		new_strands.append(new_strand)
+	all_strands.extend(new_strands)
+
+	# adding staple extensions to ghost strands
 
 	num_a = len(a_staples)
 	staple_locs =[]	
 	for i in range(0,len(staple_extension),1):
 		staples = staple_extension[i]
-		strand = strands[-3+i]
 		position = 0
 		staple_locs.append([])	
 		for staple in staples:
-			staple_locs[i].append([len(strands)-3+i,position])
-			strand['stap'][position] = [staple[0],staple[1],strand['num'], position+1]
-			for bp in range(0,three_p_length-1,1):
+			staple_locs[i].append([len(all_strands)-3+i,position])
+			all_strands[-3+i]['stap'][position] = [all_strands[-3+i]['num'], position+1,staple[0],staple[1]]
+			for bp in range(0,three_p_length-2,1):
 				position += 1
-				strand['stap'][position] = [strand['stap'][position-1][2],strand['stap'][position-1][3] - 1 ,strand['stap'][position-1][2], position+1]
+				all_strands[-3+i]['stap'][position] = [ all_strands[-3+i]['num'], position + 1, all_strands[-3+i]['num'], position - 1]
+			position += 1
+			all_strands[-3+i]['stap'][position] = [-1,-1, all_strands[-3+i]['num'], position - 1]
 			position +=3
-	print staple_locs
+		print all_strands[-3+i]['stap']
+	
+	# adding links to the ghost strands
+
 	for site in staple_extension:
 		for staple in site:
 			strand_index = staple[0]
 			position = staple[1]
-			strands[strand_index]["stap"][position][2] = staple_locs[staple_extension.index(site)][site.index(staple)][0]
-			strands[strand_index]["stap"][position][3] = staple_locs[staple_extension.index(site)][site.index(staple)][1]
-	
-	return strands
-
-
-
+			all_strands[strand_index]["stap"][position][2] = staple_locs[staple_extension.index(site)][site.index(staple)][0]
+			all_strands[strand_index]["stap"][position][3] = staple_locs[staple_extension.index(site)][site.index(staple)][1]
+	return all_strands
 
 
 #### This formula changes the color of staple strands in the caDNAno file to the specific color

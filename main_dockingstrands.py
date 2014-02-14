@@ -139,7 +139,8 @@ face_pts = f.face_points(staples,location,point_face,suggested_plane,dia,len_bp)
 
 [a,b,c]=f.find_docking_strands(suggested_sites,strands,staples,max_distance,location,len_bp,dia,docking_site_color_1,docking_site_color_2,docking_site_color_3)
 
-f.ghost_strands(a,b,c,location,strands,three_p_length)
+#strands=f.ghost_strands(a,b,c,location,strands,three_p_length)
+
 
 #############
 ## RESULTS ##
@@ -189,6 +190,7 @@ with open(new_name, 'w') as outfile:
   json.dump(file_contents_new, outfile)
 
 print "Complete. The new file is " + new_name + "."
+
 
 ###############
 ## ALL DONE! ##
