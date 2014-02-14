@@ -298,18 +298,19 @@ def find_docking_strands(suggested_sites,strands,all_staples,max_distance,locati
 	B_docking_strands = nearby_threeprime(B[0],B[1],all_staples,max_distance,location_matrix,len_bp,dia)
 	C_docking_strands = nearby_threeprime(C[0],C[1],all_staples,max_distance,location_matrix,len_bp,dia)
 
+
 	for i in A_docking_strands:
 		for staple in strands[i[2]]["stap_colors"]:
 			if staple[0] == i[3]:
-				staple[1] == color1 
+				staple[1] = color1 
 	for i in B_docking_strands:
 		for staple in strands[i[2]]["stap_colors"]:
 			if staple[0] == i[3]:
-				staple[1] == color2 
+				staple[1] = color2 
 	for i in C_docking_strands:
 		for staple in strands[i[2]]["stap_colors"]:
 			if staple[0] == i[3]:
-				staple[1] == color3 
+				staple[1] = color3 
 
 	return [A_docking_strands,B_docking_strands,C_docking_strands]
 
