@@ -47,17 +47,25 @@ face_pts = f.face_points(staples,location,loc,suggested_plane,dia,len_bp)
 
 [suggested_sites,enough_sites,possible_combos]=f.remaining_docking_sites(hull_face_pts,first_point,staples,max_distance,location,len_bp,dia,min_num_docking_strands,min_distance)
 
-print suggested_sites
 
 [a,b,c]=f.find_docking_strands(suggested_sites,strands,staples,max_distance,location,len_bp,dia,docking_site_color_1,docking_site_color_2,docking_site_color_3)
 
-print a
-
-#new_strands = f.ghost_strands(a,b,c,location,strands,three_p_length)
-#test_strand = new_strands[-3]
 
 
+new_strands = f.ghost_strands(a,b,c,location,strands,three_p_length)
+test_strand = new_strands[-3]
 
+
+
+
+
+file_contents_new = file_contents
+file_contents_new["vstrands"] = strands
+new_name = json_name[:-5] + "_new" + ".json"
+with open(new_name, 'w') as outfile:
+  json.dump(file_contents_new, outfile)
+
+print "Complete. The new file is " + new_name + "."
 
 #print face_centroid_hull
 

@@ -316,18 +316,22 @@ def find_docking_strands(suggested_sites,strands,all_staples,max_distance,locati
 
 #### Ghost strands
 
-def ghost_strands(a_staples,b_staples,c_staples,location_matrix,strands,three_p_length):
+def ghost_strands(a_staples,b_staples,c_staples,location,strands,three_p_length):
 	all_strands = strands
-	total_num_strands = len(location_matrix)
+	total_num_strands = len(location)
 	total_len_strand = len(all_strands[0]["stap"])
 	staple_extension =[a_staples,b_staples,c_staples]
 	
 	# making ghost strands
 	new_strands=[]
-	for i in range(0,3,1):
+	for i in range(0,len(staple_extension),1):
 		new_strand={}
 		new_strand['row'] = 0
-		new_strand['num'] = len(all_strands) + i
+		total_num_strands =len(all_strands)+len(new_strands)
+		if total_num_strands % 2 == 0:
+			new_strand['num'] = total_num_strands + 1
+		else:
+			new_strand['num'] = total_num_strands - 1
 		new_strand['col'] = i
 		new_strand['scaf']=[]
 		for a in range(0,total_len_strand,1):
@@ -347,6 +351,8 @@ def ghost_strands(a_staples,b_staples,c_staples,location_matrix,strands,three_p_
 		new_strands.append(new_strand)
 	all_strands.extend(new_strands)
 
+	new_location = location_matrix(all_strands)
+
 	# adding staple extensions to ghost strands
 
 	num_a = len(a_staples)
@@ -355,25 +361,38 @@ def ghost_strands(a_staples,b_staples,c_staples,location_matrix,strands,three_p_
 		staples = staple_extension[i]
 		position = 0
 		staple_locs.append([])	
-		for staple in staples:
-			staple_locs[i].append([len(all_strands)-3+i,position])
-			all_strands[-3+i]['stap'][position] = [all_strands[-3+i]['num'], position+1,staple[0],staple[1]]
-			for bp in range(0,three_p_length-2,1):
+		if  (len(all_strands) - 2 + i)  % 2 == 1:
+			for staple in staples:
+				staple_locs[i].append([strandindex_to_strandnum(new_location,len(all_strands)-3+i),position])
+				all_strands[-3+i]['stap'][position] = [staple[0],staple[1],all_strands[-3+i]['num'], position+1,]
+				for bp in range(0,three_p_length-2,1):
+					position += 1
+					all_strands[-3+i]['stap'][position] = [all_strands[-3+i]['num'], position - 1, all_strands[-3+i]['num'], position + 1]
 				position += 1
-				all_strands[-3+i]['stap'][position] = [ all_strands[-3+i]['num'], position + 1, all_strands[-3+i]['num'], position - 1]
-			position += 1
-			all_strands[-3+i]['stap'][position] = [-1,-1, all_strands[-3+i]['num'], position - 1]
-			position +=3
-		print all_strands[-3+i]['stap']
-	
-	# adding links to the ghost strands
+				all_strands[-3+i]['stap'][position] = [all_strands[-3+i]['num'], position - 1,-1,-1]
+				position += 3
+		else:
+			position = len(staples) * (three_p_length + 3)
+			for staple in staples:
+				staple_locs[i].append([strandindex_to_strandnum(new_location,len(all_strands)-3+i),position])
+				all_strands[-3+i]['stap'][position] = [staple[0],staple[1],all_strands[-3+i]['num'], position-1]
+				for bp in range(0,three_p_length-2,1):
+					position += -1
+					all_strands[-3+i]['stap'][position] = [all_strands[-3+i]['num'], position + 1, all_strands[-3+i]['num'], position - 1]
+				position += -1
+				all_strands[-3+i]['stap'][position] = [all_strands[-3+i]['num'], position + 1,-1,-1]
+				position += -3
 
+	# # adding links to the ghost strands
+	print staple_locs
 	for site in staple_extension:
 		for staple in site:
 			strand_index = staple[0]
 			position = staple[1]
 			all_strands[strand_index]["stap"][position][2] = staple_locs[staple_extension.index(site)][site.index(staple)][0]
 			all_strands[strand_index]["stap"][position][3] = staple_locs[staple_extension.index(site)][site.index(staple)][1]
+	
+
 	return all_strands
 
 

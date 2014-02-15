@@ -139,7 +139,7 @@ face_pts = f.face_points(staples,location,point_face,suggested_plane,dia,len_bp)
 
 [a,b,c]=f.find_docking_strands(suggested_sites,strands,staples,max_distance,location,len_bp,dia,docking_site_color_1,docking_site_color_2,docking_site_color_3)
 
-#strands=f.ghost_strands(a,b,c,location,strands,three_p_length)
+strands=f.ghost_strands(a,b,c,location,strands,three_p_length)
 
 
 #############
