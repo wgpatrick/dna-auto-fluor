@@ -168,7 +168,7 @@ def staple_positions(strands,location_matrix):
 
 # finds all of the potential docking sites (places with a staple strand with a 3' end) on the suggested face
 
-def face_points(staple_positions,location_matrix,loc,suggested_plane,dia,len_bp):
+def face_points(staple_positions,location_matrix,loc,suggested_plane,dia,len_bp,min_distance):
 	strand_index = loc[0]
 	staple_loc = loc[1]
 
@@ -189,20 +189,43 @@ def face_points(staple_positions,location_matrix,loc,suggested_plane,dia,len_bp)
 	elif suggested_plane == "xz":
 
 		for i in range(0,len(location_matrix),1):
-			x_point = col2x(location_matrix[i][2],dia)
-			z_point_1 = staple2z(location_matrix[i][3],len_bp)
-			z_point_2 = staple2z(location_matrix[i][4],len_bp)
-			face_points.append([i,location_matrix[i][3],x_point,z_point_1])
-			face_points.append([i,location_matrix[i][4],x_point,z_point_2])
+			if abs(location_matrix[i][3]-location_matrix[i][4]) < (2 * min_distance / len_bp):
+				x_point = col2x(location_matrix[i][2],dia)
+				z_point_1 = staple2z(location_matrix[i][3],len_bp)
+				z_point_2 = staple2z(location_matrix[i][4],len_bp)
+				face_points.append([i,location_matrix[i][3],x_point,z_point_1])
+				face_points.append([i,location_matrix[i][4],x_point,z_point_2])
+			else:
+				x_point = col2x(location_matrix[i][2],dia)
+				z_point_1 = staple2z(location_matrix[i][3],len_bp)
+				z_point_2 = staple2z(location_matrix[i][4],len_bp)
+				face_points.append([i,location_matrix[i][3],x_point,z_point_1])
+				face_points.append([i,location_matrix[i][4],x_point,z_point_2])
+				m = 1
+				while (m * min_distance) < abs(z_point_2-z_point_1):
+					face_points.append([i,int(location_matrix[i][3]+(m*min_distance / len_bp)),x_point,z_point_1+m*min_distance])
+					m+=1
 	
 	else:
 
 		for i in range(0,len(location_matrix),1):
-			y_point = row2y(location_matrix[i][1],location_matrix[i][2],dia)
-			z_point_1 = staple2z(location_matrix[i][3],len_bp)
-			z_point_2 = staple2z(location_matrix[i][4],len_bp)
-			face_points.append([i,location_matrix[i][3],y_point,z_point_1])
-			face_points.append([i,location_matrix[i][4],y_point,z_point_2])
+			if abs(location_matrix[i][3]-location_matrix[i][4]) < (2 * min_distance / len_bp):
+				y_point = row2y(location_matrix[i][1],location_matrix[i][2],dia)
+				z_point_1 = staple2z(location_matrix[i][3],len_bp)
+				z_point_2 = staple2z(location_matrix[i][4],len_bp)
+				face_points.append([i,location_matrix[i][3],y_point,z_point_1])
+				face_points.append([i,location_matrix[i][4],y_point,z_point_2])
+			else:
+				y_point = row2y(location_matrix[i][1],location_matrix[i][2],dia)
+				z_point_1 = staple2z(location_matrix[i][3],len_bp)
+				z_point_2 = staple2z(location_matrix[i][4],len_bp)
+				face_points.append([i,location_matrix[i][3],y_point,z_point_1])
+				face_points.append([i,location_matrix[i][4],y_point,z_point_2])
+				m = 1
+				while (m * min_distance) < abs(z_point_2-z_point_1):
+					face_points.append([i,int(location_matrix[i][3]+ (m*min_distance / len_bp)),y_point,z_point_1+m*min_distance])
+					m+=1
+
 	return face_points
 
 ## Finds the location of the centroid on the points of face
@@ -216,6 +239,10 @@ def centroid_hull(face_points):
 	hull_vertices = convex_hull.vertices
 	for_centroid = [0,0]
 	face_points_hull = []
+
+	##### Note ###### 
+	# Change calculation of centroid later for all of face_points
+
 	for i in hull_vertices:
 		for_centroid[0] += hull_points[i[0]][0]
 		for_centroid[1] += hull_points[i[0]][1]
@@ -226,7 +253,11 @@ def centroid_hull(face_points):
 		d_centroid = math.sqrt((point[2] - centroid[0])**2 + (point[3] - centroid[1])**2)
 		point.append(d_centroid)
 
-	return [face_points_hull,centroid]
+	for point in face_points:
+		d_centroid = math.sqrt((point[2] - centroid[0])**2 + (point[3] - centroid[1])**2)
+		point.append(d_centroid)
+
+	return [face_points,centroid]
 
 # Returns a list of 3' strands within a certain distance of a specific point on the nanostructure. 
 # Arguments are: the position of interest (strand_index & staple pos), the list of all staples computed by staple_positions(), 
@@ -248,15 +279,17 @@ def first_point(face_points,staples, max_distance, location, len_bp, dia, min_nu
 	maximum = max([i[4] for i in face_centroid_hull[0]])
 	index = [i[4] for i in face_centroid_hull[0]].index(maximum)
 	sorted_face_hull = sorted(face_centroid_hull[0], key=itemgetter(4),reverse=True)
-	
+	first_point=[]
 	for point in sorted_face_hull:
 		num_nearby_docking_strands = len(nearby_threeprime(point[0],point[1],staples,max_distance,location,len_bp,dia))
+		print num_nearby_docking_strands
 		if num_nearby_docking_strands >= min_num_docking_strands:
-			first_point = point
+			first_point.extend(point)
 			break
-	if first_point ==[]:
-		print "Could not find a first docking site with 5 or more nearby 3' staple strands. Try increasing the minimum distance between the fluorophore docking strand and the site"
-	return [first_point,sorted_face_hull]		
+	if first_point == []:
+		print "Could not find a first docking site with " + str(min_num_docking_strands) + " or more nearby 3' staple strands. Try increasing the minimum distance between the fluorophore docking strand and the site"
+	return [first_point,sorted_face_hull]
+
 
 
 ## This finds the remaining docking sites
@@ -264,17 +297,20 @@ def first_point(face_points,staples, max_distance, location, len_bp, dia, min_nu
 def remaining_docking_sites(hulled_face_points,first_point,all_staples,max_distance,location_matrix,len_bp,dia,min_num_docking_strands,min_distance):
 	sites_with_enough_nearby_docking_strands =[]
 	sites_with_enough=[]
+
 	for site in hulled_face_points:
 		threeprimes=nearby_threeprime(site[0],site[1],all_staples,max_distance,location_matrix,len_bp,dia)
 		if len(threeprimes) >= min_num_docking_strands:
 			sites_with_enough.append(site)
 
 	possible_combos=[]
+
 	for i in range(0,len(sites_with_enough),1):
 		for j in range(0,len(sites_with_enough),1):
 			d1 = math.sqrt( (sites_with_enough[i][2]-first_point[2])**2 + (sites_with_enough[i][3]-first_point[3])**2 )
 			d2 = math.sqrt( (sites_with_enough[i][2]-sites_with_enough[j][2])**2 + (sites_with_enough[i][3]-sites_with_enough[j][3])**2 )
 			d3 = math.sqrt( (sites_with_enough[j][2]-first_point[2])**2 + (sites_with_enough[j][3]-first_point[3])**2 )	
+			print [d1,d2,d3]
 			if ((d3 > min_distance) & (d2 > min_distance) & (d1 > min_distance)):			
 				site_1 = first_point[0:2]
 				site_2 = sites_with_enough[i][0:2]
@@ -384,7 +420,6 @@ def ghost_strands(a_staples,b_staples,c_staples,location,strands,three_p_length)
 				position += -3
 
 	# # adding links to the ghost strands
-	print staple_locs
 	for site in staple_extension:
 		for staple in site:
 			strand_index = staple[0]

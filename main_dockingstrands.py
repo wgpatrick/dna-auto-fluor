@@ -131,15 +131,21 @@ print "Now it is time to select the locations for the docking sites"
 #### ANALYZING THE STRUCTURE TO FIND DOCKING SITES AND STRANDS #####
 ####################################################################
 
-face_pts = f.face_points(staples,location,point_face,suggested_plane,dia,len_bp)
-
+face_pts = f.face_points(staples,location,point_face,suggested_plane,dia,len_bp,min_distance)
+print "Found face points"
 [first_point,hull_face_pts] = f.first_point(face_pts,staples, max_distance, location, len_bp, dia,min_num_docking_strands)
+print "Found first site"
 
 [suggested_sites,enough_sites,possible_combos]=f.remaining_docking_sites(hull_face_pts,first_point,staples,max_distance,location,len_bp,dia,min_num_docking_strands,min_distance)
 
+print "Found suggested sites"
+
 [a,b,c]=f.find_docking_strands(suggested_sites,strands,staples,max_distance,location,len_bp,dia,docking_site_color_1,docking_site_color_2,docking_site_color_3)
 
+print "Found docking strands"
+
 strands=f.ghost_strands(a,b,c,location,strands,three_p_length)
+
 
 
 #############
