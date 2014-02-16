@@ -20,6 +20,9 @@ def location_matrix(strands):
 		col = strand['col']
 		num = strand['num']
 		i = 0
+		beginning_staple=0
+		end_staple=0
+
 		# Finds first strand of the 
 		for scaf in strand['scaf']:
 			if scaf[0] != -1:
@@ -35,6 +38,7 @@ def location_matrix(strands):
 			else:
 				j += 1
 		location_matrix.append([num,row,col,beginning_staple,end_staple])
+		
 	return location_matrix
 
 # Calculate the distance between two points in the nanostructure.
@@ -132,7 +136,7 @@ def streptavidin_staples(suggested_plane, loc, location_matrix, strands,dia,len_
 				for five_prime_end in strand['stap_colors']:
 					five_prime_end[1] = 9109606
 	else:
-		x_pos = col2x(location_matrix[strand][2])
+		x_pos = col2x(location_matrix[strand_num][2],dia)
 		for strand in strands:
 			x_strand = col2x(strand['col'],dia)
 			if x_strand == x_pos:
@@ -178,13 +182,17 @@ def face_points(staple_positions,location_matrix,loc,suggested_plane,dia,len_bp,
 		
 		#Notice this is an imperfect approach for figuring out which "side" of the structure the user selected the point
 		
+		
+
 		for i in range(0,len(location_matrix),1):
+			staple_start = location_matrix[i][3]
+			staple_end = location_matrix[i][4]
 			x_point = col2x(location_matrix[i][2],dia)
 			y_point = row2y(location_matrix[i][1],location_matrix[i][2],dia)
 			if abs(staple_loc - staple_start) < abs(staple_loc - staple_end):
-				face_points.append([i,location_matrix[i][4],x_point,y_point])
+				face_points.append([i,location_matrix[i][3],x_point,y_point])
 			else:
-				face_points.append([i,location_matrix[i][5],x_point,y_point])
+				face_points.append([i,location_matrix[i][4],x_point,y_point])
 
 	elif suggested_plane == "xz":
 
@@ -282,7 +290,6 @@ def first_point(face_points,staples, max_distance, location, len_bp, dia, min_nu
 	first_point=[]
 	for point in sorted_face_hull:
 		num_nearby_docking_strands = len(nearby_threeprime(point[0],point[1],staples,max_distance,location,len_bp,dia))
-		print num_nearby_docking_strands
 		if num_nearby_docking_strands >= min_num_docking_strands:
 			first_point.extend(point)
 			break
@@ -319,6 +326,8 @@ def remaining_docking_sites(hulled_face_points,first_point,all_staples,max_dista
 				if not ( [site_1,site_3,site_2,[d3,d2,d1],d_perim] in possible_combos):
 					possible_combos.append([site_1,site_2,site_3,[d1,d2,d3],d_perim])
 	sorted_combos = sorted(possible_combos,key=itemgetter(4),reverse=True)
+	if sorted_combos == []:
+		print "Could not find 2 suitable docking sites on the structure. Trying making the distance between dockint sites smaller or increasing the distance between docking site and docking strand."
 	suggested_sites = sorted_combos[0]
 
 	return [suggested_sites,sites_with_enough,sorted_combos]
@@ -358,6 +367,9 @@ def ghost_strands(a_staples,b_staples,c_staples,location,strands,three_p_length)
 	total_len_strand = len(all_strands[0]["stap"])
 	staple_extension =[a_staples,b_staples,c_staples]
 	
+	if total_len_strand < 100:
+		total_len_strand = 100
+
 	# making ghost strands
 	new_strands=[]
 	for i in range(0,len(staple_extension),1):
@@ -385,7 +397,9 @@ def ghost_strands(a_staples,b_staples,c_staples,location,strands,three_p_length)
 		new_strand['stap_Loop']=[]
 		new_strand['scafLoop']=[]
 		new_strands.append(new_strand)
+
 	all_strands.extend(new_strands)
+
 
 	new_location = location_matrix(all_strands)
 
