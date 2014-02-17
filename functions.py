@@ -317,7 +317,6 @@ def remaining_docking_sites(hulled_face_points,first_point,all_staples,max_dista
 			d1 = math.sqrt( (sites_with_enough[i][2]-first_point[2])**2 + (sites_with_enough[i][3]-first_point[3])**2 )
 			d2 = math.sqrt( (sites_with_enough[i][2]-sites_with_enough[j][2])**2 + (sites_with_enough[i][3]-sites_with_enough[j][3])**2 )
 			d3 = math.sqrt( (sites_with_enough[j][2]-first_point[2])**2 + (sites_with_enough[j][3]-first_point[3])**2 )	
-			print [d1,d2,d3]
 			if ((d3 > min_distance) & (d2 > min_distance) & (d1 > min_distance)):			
 				site_1 = first_point[0:2]
 				site_2 = sites_with_enough[i][0:2]

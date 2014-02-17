@@ -57,7 +57,6 @@ print
 print "The script analyzes a caDNAno JSON file and identifies potential docking sites for fluorescence tagging and nearby 3' staple strands that could be utilized as docking staple strands."
 print 
 print "In it's current form, this script cannot process all types of JSON files. Before using the script, please read over the brief documentation."
-#print "In it's current form the script has several limitations: (1) the script is not currently written to handle stands that have multiple ending and starting points, (2) the viewing planes for the  microscp"
 
 #################
 ### INPUTS ######
